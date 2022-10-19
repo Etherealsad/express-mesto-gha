@@ -1,4 +1,4 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
 
 const Error400 = 400;
 const Error404 = 404;
@@ -10,7 +10,7 @@ module.exports.getCards = (req, res) => {
       res.status(200).send(cards);
     })
     .catch(() => {
-      res.status(Error500).send({ message: "На сервере произошла ошибка." });
+      res.status(Error500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
@@ -21,10 +21,10 @@ module.exports.createCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(Error400).send({ message: "Переданы некорректные данные при создании карточки." });
+      if (err.name === 'ValidationError') {
+        res.status(Error400).send({ message: 'Переданы некорректные данные при создании карточки.' });
       } else {
-        res.status(Error500).send({ message: "На сервере произошла ошибка." });
+        res.status(Error500).send({ message: 'На сервере произошла ошибка.' });
       }
     });
 };
@@ -36,10 +36,10 @@ module.exports.deleteCardByID = (req, res) => {
       res.status(200).send({ message: `Карточка c _id: ${card._id} успешно удалена.` });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(Error400).send({ message: "Переданы некорректные данные." });
+      if (err.name === 'CastError') {
+        res.status(Error400).send({ message: 'Переданы некорректные данные.' });
       } else {
-        res.status(Error404).send({ message: "Карточка с указанным _id не найдена." });
+        res.status(Error404).send({ message: 'Карточка с указанным _id не найдена.' });
       }
     });
 };
@@ -50,15 +50,15 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new Error("IncorrectCardID"))
+    .orFail(new Error('IncorrectCardID'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(Error400).send({ message: "Переданы некорректные данные для постановки лайка." });
-      } else if (err.message === "IncorrectCardID") {
-        res.status(Error404).send({ message: "Адрес указан некорректно." });
+      if (err.name === 'CastError') {
+        res.status(Error400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+      } else if (err.message === 'IncorrectCardID') {
+        res.status(Error404).send({ message: 'Адрес указан некорректно.' });
       } else {
-        res.status(Error500).send({ message: "На сервере произошла ошибка." });
+        res.status(Error500).send({ message: 'На сервере произошла ошибка.' });
       }
     });
 };
@@ -69,15 +69,15 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new Error("IncorrectCardID"))
+    .orFail(new Error('IncorrectCardID'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(Error400).send({ message: "Переданы некорректные данные для снятия лайка." });
-      } else if (err.message === "IncorrectCardID") {
-        res.status(Error404).send({ message: "Адрес указан некорректно." });
+      if (err.name === 'CastError') {
+        res.status(Error400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
+      } else if (err.message === 'IncorrectCardID') {
+        res.status(Error404).send({ message: 'Адрес указан некорректно.' });
       } else {
-        res.status(Error500).send({ message: "На сервере произошла ошибка." });
+        res.status(Error500).send({ message: 'На сервере произошла ошибка.' });
       }
     });
 };
