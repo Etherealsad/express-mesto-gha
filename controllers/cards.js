@@ -28,21 +28,22 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCardByID = (req, res) => {
-  Card.findById(req.params.cardId)
+module.exports.deleteCardById = (req, res) => {
+  const { cardId } = req.params;
+
+  Card.findByIdAndRemove(cardId)
     .then((card) => {
-      card.remove();
       if (!card) {
-        res.status(Error404).send({ message: `Карточка c _id: ${card._id} не найдена.` });
+        res.status(Error404).send({ message: 'Card not found' });
         return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(Error400).send({ message: 'Переданы некорректные данные.' });
+        res.status(Error400).send({ message: `Card id ${cardId} is not correct` });
       } else {
-        res.status(Error500).send({ message: 'Произошла ошибка.' });
+        res.status(500).send({ message: 'Error has occured' });
       }
     });
 };
