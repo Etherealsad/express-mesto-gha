@@ -1,8 +1,7 @@
 const Card = require('../models/card');
-
-const Error400 = 400;
-const Error404 = 404;
-const Error500 = 500;
+const {
+  Error400, Error404, Error500,
+} = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -32,14 +31,17 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCardByID = (req, res) => {
   Card.findById(req.params.cardId)
     .then((card) => {
-      card.remove();
-      res.status(200).send({ message: `Карточка c _id: ${card._id} успешно удалена.` });
+      if (!card) {
+        res.status(404).send({ message: `Карточка c _id: ${card._id} не найдена.` });
+        return;
+      }
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(Error400).send({ message: 'Переданы некорректные данные.' });
       } else {
-        res.status(Error404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(Error500).send({ message: 'Произошла ошибка.' });
       }
     });
 };

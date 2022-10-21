@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint .",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
@@ -12,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/Etherealsad/express-mesto-gha.git"
   },
-  "author": "",
+  "author": "Mihail Kuksenok",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Etherealsad/express-mesto-gha/issues"
@@ -30,3 +31,4 @@
     "nodemon": "^2.0.20"
   }
 }
+   
