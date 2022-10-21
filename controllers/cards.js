@@ -32,7 +32,7 @@ module.exports.deleteCardByID = (req, res) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `Карточка c _id: ${card._id} не найдена.` });
+        res.status(Error404).send({ message: `Карточка c _id: ${card._id} не найдена.` });
         return;
       }
       res.send({ data: card });
