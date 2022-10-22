@@ -1,8 +1,8 @@
 const User = require('../models/user');
 
-const Error400 = 400;
-const Error404 = 404;
-const Error500 = 500;
+const {
+  Error400, Error404, Error500,
+} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})

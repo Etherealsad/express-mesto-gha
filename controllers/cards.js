@@ -43,7 +43,7 @@ module.exports.deleteCardById = (req, res) => {
       if (err.name === 'CastError') {
         res.status(Error400).send({ message: `Card id ${cardId} is not correct` });
       } else {
-        res.status(500).send({ message: 'Error has occured' });
+        res.status(Error500).send({ message: 'Error has occured' });
       }
     });
 };
