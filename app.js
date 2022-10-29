@@ -11,17 +11,16 @@ const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/error');
 const regExp = require('./regexp/regexp');
 const NotFoundError = require('./errors/not-found-err');
-require('dotenv').config();
 
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
+  // useUnifiedTopology: true,
+  // useNewUrlParser: true,
+  // useCreateIndex: true,
+  // useFindAndModify: false,
 });
 
 app.post('/signup', celebrate({
@@ -46,7 +45,7 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('*', (req, res, next) => next(new NotFoundError('Ресурс не найден.')));
+app.use('/*', (req, res, next) => next(new NotFoundError('Ресурс не найден.')));
 
 app.use(errors());
 
