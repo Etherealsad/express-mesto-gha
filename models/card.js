@@ -1,33 +1,36 @@
 const mongoose = require('mongoose');
-const { isURL } = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    minlength: [2, 'Минимальная длина поля "name" - 2 символаю'],
-    maxlength: [30, 'Максимальная длина поля "name" - 30 символов.'],
-    required: [true, 'Поле "name" должно быть заполнено.'],
+    required: true,
+    minlength: 2,
+    maxlength: 30,
   },
   link: {
     type: String,
-    required: [true, 'Поле "link" должно быть заполнено.'],
+    required: true,
     validate: {
-      validator: (v) => isURL(v),
-      message: 'Поле "link" не соответствует требуемому формату URL.',
+      validator(v) {
+        return /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-/]))?/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid link!`,
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
     ref: 'user',
-    required: [true, 'Поле "owner" должно быть заполнено.'],
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
+    default: [],
+    ref: 'user',
   }],
   createdAt: {
     type: Date,
     default: Date.now,
   },
-}, { versionKey: false });
+});
 
 module.exports = mongoose.model('card', cardSchema);

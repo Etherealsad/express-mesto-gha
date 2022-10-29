@@ -1,31 +1,37 @@
-const router = require('express').Router();
+const routerCards = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const auth = require('../middlewares/auth');
+const { validateId } = require('../utils/validateId');
+
 const {
-  getCards, createCard, deleteCardById, likeCard, dislikeCard,
+  getAllCards, createCard, deleteCardById, likeCard, dislikeCard,
 } = require('../controllers/cards');
-const regExp = require('../regexp/regexp');
 
-router.get('/cards', getCards);
-router.post('/cards', celebrate({
+routerCards.get('/cards', auth, getAllCards);
+
+routerCards.post('/cards', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().required().pattern(regExp),
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().pattern(/(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-/]))?/),
   }),
-}), createCard);
-router.delete('/cards/:cardId', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
-  }),
-}), deleteCardById);
-router.put('/cards/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
-  }),
-}), likeCard);
-router.delete('/cards/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
-  }),
-}), dislikeCard);
+}), auth, createCard);
 
-module.exports = router;
+routerCards.delete('/cards/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().custom(validateId, 'ObjectId validation'),
+  }),
+}), auth, deleteCardById);
+
+routerCards.put('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().custom(validateId, 'ObjectId validation'),
+  }),
+}), auth, likeCard);
+
+routerCards.delete('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().custom(validateId, 'ObjectId validation'),
+  }),
+}), auth, dislikeCard);
+
+module.exports = routerCards;

@@ -1,42 +1,62 @@
 const mongoose = require('mongoose');
-const { isEmail, isURL } = require('validator');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const UnauthorizedError = require('../errors/unauthorized-errors');
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minlength: [2, 'Минимальная длина поля "name" - 2 символа.'],
-    maxlength: [30, 'Максимальная длина поля "name" - 2 символа.'],
+  name: { // у пользователя есть имя — опишем требования к имени в схеме:
+    type: String, // имя — это строка
+    required: false, // оно должно быть у каждого пользователя, так что имя — обязательное поле
+    minlength: 2, // минимальная длина имени — 2 символа
+    maxlength: 30, // а максимальная — 30 символов
     default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
-    minlength: [2, 'Минимальная длина поля "name" - 2 символа.'],
-    maxlength: [30, 'Максимальная длина поля "name" - 2 символа.'],
+    required: false,
+    minlength: 2,
+    maxlength: 30,
     default: 'Исследователь',
   },
   avatar: {
     type: String,
+    required: false,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v) => isURL(v),
-      message: 'Поле "avatar" не соответствует требуемому формату URL.',
+      validator(v) {
+        return /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-/]))?/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid link!`,
     },
   },
   email: {
     type: String,
-    unique: [true, 'Пользователь с таким "email" уже существует.'],
-    required: [true, 'Поле "email" должно быть заполнено.'],
-    validate: {
-      validator: (v) => isEmail(v),
-      message: 'Неправильный формат почты.',
-    },
+    unique: true,
+    required: [true, 'Please enter Email Address'],
+    validate: [validator.isEmail, 'Invalid email'],
   },
   password: {
     type: String,
-    minlength: [8, 'Минимальная длина поля "password" - 8 символов.'],
-    required: [true, 'Поле "password" должно быть заполнено.'],
+    required: [true, 'Please enter Your Password'],
+    minlength: [4, 'Password must be at least 6 characters'],
     select: false,
   },
 }, { versionKey: false });
+
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new UnauthorizedError('Email or password is incorrect'));
+      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new UnauthorizedError('Email or password is incorrect'));
+          }
+          return user;
+        });
+    });
+};
 
 module.exports = mongoose.model('user', userSchema);
