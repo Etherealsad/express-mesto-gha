@@ -11,9 +11,6 @@ const {
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.status(STATUS_OK).send({ data: cards }))
-    .catch((err) => {
-      throw err;
-    })
     .catch(next);
 };
 
@@ -39,7 +36,7 @@ module.exports.deleteCardById = (req, res, next) => {
     .then((card) => {
       if (!card) { throw new NotFoundError('Card not found'); }
       // eslint-disable-next-line eqeqeq
-      if (card.owner != req.user._id) { throw new ForbiddenError('You can not delete not yours cards'); }
+      if (card.owner !== req.user._id) { throw new ForbiddenError('You can not delete not yours cards'); }
       return card.remove();
     })
     .then(() => {

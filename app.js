@@ -24,8 +24,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(routerUsers);
 app.use(routerCards);
 
-app.all('/*', () => {
-  throw new NotFoundError('Requested path not found');
+app.use('/*', (req, res, next) => {
+  next(new NotFoundError('Requested path not found'));
 });
 
 app.use(errors());
